@@ -3,6 +3,7 @@ const productWrapper = document.querySelector('.product__wrapper');
 items.forEach(element => {
     let productCard = document.createElement('div');
     productCard.setAttribute('class', 'product__card');
+    productCard.setAttribute('data-card-id',`${element.id}`);
     productWrapper.append(productCard);
     
     productCard.innerHTML =
@@ -95,7 +96,7 @@ items.forEach((element) => {
 
 </div>`
 
-})
+});
 
 
 for (let i = 0; i < btns.length; i++) {
@@ -109,20 +110,22 @@ for (let i = 0; i < btns.length; i++) {
     modalWindowWrapper.style='display:none';
     })
   })
-  
-}
+};
 
 /*Search on site by the device names*/
 const searchWrapper = document.querySelector(".search__box");
 const inputBox = searchWrapper.querySelector("input");
 const suggBox = searchWrapper.querySelector(".autocom-box");
 let deviceNames = document.querySelectorAll('.product__name');
+let inputTargetValue = document.querySelector('#site-search');
+
 
 const icon = searchWrapper.querySelector(".icon");
 let linkTag = searchWrapper.querySelector("a");
 let webLink;
 
-document.querySelector('#site-search').oninput = function(){
+
+inputTargetValue.addEventListener('input',function(event){
   let value = this.value;
   if (value != ''){
     for (let i = 0; i < deviceNames.length; i++) {
@@ -137,15 +140,14 @@ document.querySelector('#site-search').oninput = function(){
       deviceNames[i].parentElement.classList.remove('hide');
     };
   }
-}
+})
 
 let suggestions = [];
 
 deviceNames.forEach((element)=>{
  suggestions.push(element.innerHTML)
   return suggestions;
-})
-console.log(suggestions)
+});
 
 // getting all required elements
 // if user press any key and release
@@ -166,17 +168,17 @@ inputBox.onkeyup = (e)=>{
         let allList = suggBox.querySelectorAll("li");
         for (let i = 0; i < allList.length; i++) {
             //adding onclick attribute in all li tag
-            allList[i].setAttribute("onclick", "select(this)");
+            allList[i].addEventListener('click', (event)=>{
+              let selectData =  allList[i].textContent;
+              inputBox.value = selectData;
+              searchWrapper.classList.remove("active");
+            });
         }
     }else{
         searchWrapper.classList.remove("active"); //hide autocomplete box
     }
 }
-function select(element){
-    let selectData = element.textContent;
-    inputBox.value = selectData;
-    searchWrapper.classList.remove("active");
-}
+
 function showSuggestions(list){
     let listData;
     if(!list.length){
