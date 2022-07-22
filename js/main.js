@@ -3,6 +3,7 @@ const productWrapper = document.querySelector('.product__wrapper');
 items.forEach(element => {
     let productCard = document.createElement('div');
     productCard.setAttribute('class', 'product__card');
+    productCard.setAttribute('data-card-id',`${element.id}`);
     productWrapper.append(productCard);
     
     productCard.innerHTML =
@@ -95,7 +96,7 @@ items.forEach((element) => {
 
 </div>`
 
-})
+});
 
 
 for (let i = 0; i < btns.length; i++) {
@@ -109,5 +110,82 @@ for (let i = 0; i < btns.length; i++) {
     modalWindowWrapper.style='display:none';
     })
   })
-  
+};
+
+/*Search on site by the device names*/
+const searchWrapper = document.querySelector(".search__box");
+const inputBox = searchWrapper.querySelector("input");
+const suggBox = searchWrapper.querySelector(".autocom-box");
+let deviceNames = document.querySelectorAll('.product__name');
+let inputTargetValue = document.querySelector('#site-search');
+
+
+const icon = searchWrapper.querySelector(".icon");
+let linkTag = searchWrapper.querySelector("a");
+let webLink;
+
+
+inputTargetValue.addEventListener('input',function(event){
+  let value = this.value;
+  if (value != ''){
+    for (let i = 0; i < deviceNames.length; i++) {
+      if(deviceNames[i].innerHTML.search(value) == -1){
+        deviceNames[i].parentElement.classList.add('hide');
+      }else{
+        deviceNames[i].parentElement.classList.remove('hide');
+      }
+    };
+  }else{
+    for (let i = 0; i < deviceNames.length; i++) {
+      deviceNames[i].parentElement.classList.remove('hide');
+    };
+  }
+})
+
+let suggestions = [];
+
+deviceNames.forEach((element)=>{
+ suggestions.push(element.innerHTML)
+  return suggestions;
+});
+
+// getting all required elements
+// if user press any key and release
+inputBox.onkeyup = (e)=>{
+    let userData = e.target.value; //user enetered data
+    let emptyArray = [];
+    if(userData){
+         emptyArray = suggestions.filter((data)=>{
+            //filtering array value and user characters to lowercase and return only those words which are start with user enetered chars
+            return data.toLocaleLowerCase().startsWith(userData.toLocaleLowerCase());
+        });
+        emptyArray = emptyArray.map((data)=>{
+            // passing return data inside li tag
+            return data = `<li>${data}</li>`;
+        });
+        searchWrapper.classList.add("active"); //show autocomplete box
+        showSuggestions(emptyArray);
+        let allList = suggBox.querySelectorAll("li");
+        for (let i = 0; i < allList.length; i++) {
+            //adding onclick attribute in all li tag
+            allList[i].addEventListener('click', (event)=>{
+              let selectData =  allList[i].textContent;
+              inputBox.value = selectData;
+              searchWrapper.classList.remove("active");
+            });
+        }
+    }else{
+        searchWrapper.classList.remove("active"); //hide autocomplete box
+    }
+}
+
+function showSuggestions(list){
+    let listData;
+    if(!list.length){
+        userValue = inputBox.value;
+        listData = `<li>${userValue}</li>`;
+    }else{
+      listData = list.join('');
+    }
+    suggBox.innerHTML = listData;
 }
